@@ -34,8 +34,13 @@ button{cursor:pointer}
 #app{height:100dvh;display:grid;grid-template-rows:auto 1fr auto}
 .top{display:flex;align-items:center;justify-content:space-between;gap:10px;
   padding:calc(env(safe-area-inset-top,0px) + 10px) max(14px,env(safe-area-inset-right,0px)) 10px max(14px,env(safe-area-inset-left,0px))}
+.top-l{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0}
+.proj-pill{display:flex;align-items:center;gap:6px;background:none;border:0;padding:2px 0;font:700 17px var(--sans);max-width:72vw;min-width:0}
+.proj-pill span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.proj-pill svg{width:16px;height:16px;flex:none;color:var(--muted)}
+.proj-pill.empty{color:var(--accent)}
 .chip{display:inline-flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:999px;
-  padding:7px 12px;font:500 13px var(--mono);font-variant-numeric:tabular-nums;color:var(--muted);min-width:0;max-width:70vw}
+  padding:5px 11px;font:500 12px var(--mono);font-variant-numeric:tabular-nums;color:var(--muted);min-width:0;max-width:72vw}
 .chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
 .chip[data-s="ok"] .dot{background:var(--ok)} .chip[data-s="wait"] .dot{background:var(--warn);animation:blink 1s infinite}
@@ -100,13 +105,28 @@ button{cursor:pointer}
 .switch input:checked{background:var(--accent)} .switch input:checked::after{transform:translateX(20px)}
 input[type=range]{width:100%;accent-color:var(--accent)}
 .hint{font-size:13px;color:var(--muted);margin:0}
+.projlist{display:flex;flex-wrap:wrap;gap:8px}
+.pchip{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:8px 14px;font-size:14px;color:var(--muted)}
+.pchip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.pchip.add{border-style:dashed}
+.projedit{display:grid;gap:14px;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px}
+.projedit .field input[type=text]{background:var(--panel)}
+.logo-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.logo-box{width:96px;height:56px;border-radius:10px;background:#fff;display:grid;place-items:center;overflow:hidden;font-size:12px;color:#6b7480;flex:none}
+.logo-box img{max-width:88px;max-height:48px;object-fit:contain}
+.btn.small{padding:9px 12px;font-size:14px}
+.btn.danger{color:var(--err);background:transparent}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <main id="app">
   <header class="top">
-    <span class="chip" id="gpsChip" data-s="off"><i class="dot"></i><span id="gpsTxt">GPS kapalı</span></span>
+    <div class="top-l">
+      <button class="proj-pill" id="projPill" type="button" aria-label="Proje seç"><span id="projPillTxt">Proje seç</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+      <span class="chip" id="gpsChip" data-s="off"><i class="dot"></i><span id="gpsTxt">GPS kapalı</span></span>
+    </div>
     <button class="icon" id="settingsBtn" type="button" aria-label="Ayarlar">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
     </button>
@@ -152,7 +172,22 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   <div class="grab"></div>
   <div class="form">
     <div class="sheet-head"><h2>Damga ayarları</h2><button class="btn" id="closeSheet" type="button">Tamam</button></div>
-    <label class="field"><span class="lbl">Proje</span><input type="text" id="proje" placeholder="ör. Adana-TERRP-W3" maxlength="60" autocomplete="off"></label>
+    <div class="field"><span class="lbl">Proje</span><div class="projlist" id="projList"></div></div>
+    <div class="projedit" id="projEdit" hidden>
+      <label class="field"><span class="lbl">Kısa ad (damgada görünür)</span><input type="text" id="pKod" maxlength="40" autocomplete="off"></label>
+      <label class="field"><span class="lbl">İşin tam adı</span><input type="text" id="pAd" maxlength="120" autocomplete="off" placeholder="İsteğe bağlı"></label>
+      <div class="field"><span class="lbl">Logo</span>
+        <div class="logo-row">
+          <div class="logo-box" id="logoBox">Logo yok</div>
+          <label class="btn small" for="logoPick">Logo yükle</label>
+          <input class="sr" type="file" id="logoPick" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+          <button class="btn small" id="logoDel" type="button">Kaldır</button>
+        </div>
+        <span class="hint">Şeffaf arka planlı PNG en iyi sonucu verir. Logo damganın üstünde beyaz zeminde görünür.</span>
+      </div>
+      <button class="btn small danger" id="pDel" type="button">Projeyi sil</button>
+    </div>
+    <label class="switch"><span><b>İşin tam adını yaz</b><br><span class="hint">Kısa adın altına ayrı satır olarak</span></span><input type="checkbox" id="tamAd"></label>
     <label class="field"><span class="lbl">Not</span><input type="text" id="not" placeholder="ör. Km 2+450 boru döşeme" maxlength="80" autocomplete="off"></label>
     <label class="switch"><span><b>GPS koordinatı</b><br><span class="hint">Enlem ve boylamı damgaya ekler</span></span><input type="checkbox" id="gps" checked></label>
     <div class="two">
@@ -178,12 +213,96 @@ const toLocal = d => `${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())
 const fmtGps = g => `${Math.abs(g.lat).toFixed(5)}° ${g.lat>=0?'K':'G'}  ${Math.abs(g.lon).toFixed(5)}° ${g.lon>=0?'D':'B'}${g.acc?`  ±${Math.round(g.acc)} m`:''}`;
 
 /* ---------- Ayarlar ---------- */
-const S = { proje:'', not:'', gps:true, stil:'serit', konum:'sag', boyut:1 };
+const uid = () => Math.random().toString(36).slice(2, 10);
+const DEFAULT_PROJECTS = [
+  { id:'w2', kod:'Adana-TERRP-W2', ad:'Pozantı Atıksu Arıtma Tesisi İnşaatı' },
+  { id:'w3', kod:'Adana-TERRP-W3', ad:'Pozantı-Akçatekir Kanalizasyon ve İçme Suyu Şebekesi Yapım İşi' },
+  { id:'w4', kod:'Adana-TERRP-W4', ad:'Adana Merkez Yağmur Suyu Yapım İşi' }
+];
+const S = { not:'', gps:true, stil:'serit', konum:'sag', boyut:1, tamAd:false, projects:null, active:null };
 try { Object.assign(S, JSON.parse(localStorage.getItem('damga') || '{}')); } catch(e) {}
-const save = () => { try { localStorage.setItem('damga', JSON.stringify(S)); } catch(e) {} };
-$('proje').value = S.proje; $('not').value = S.not; $('gps').checked = S.gps; $('boyut').value = S.boyut;
+if (!Array.isArray(S.projects)){
+  S.projects = DEFAULT_PROJECTS.map(p => ({ ...p }));
+  const old = (S.proje || '').trim();          // önceki sürümden kalan serbest proje adı
+  if (old){ let p = S.projects.find(q => q.kod === old); if (!p){ p = { id: uid(), kod: old, ad: '' }; S.projects.push(p); } S.active = p.id; }
+}
+delete S.proje;
+const save = () => {
+  try { localStorage.setItem('damga', JSON.stringify(S)); return true; }
+  catch(e) { return false; }
+};
+const active = () => S.projects.find(p => p.id === S.active) || null;
+$('not').value = S.not; $('gps').checked = S.gps; $('boyut').value = S.boyut; $('tamAd').checked = S.tamAd;
 $('stil-' + S.stil).checked = true; $('konum-' + S.konum).checked = true;
-['proje','not'].forEach(k => $(k).addEventListener('input', () => { S[k] = $(k).value; save(); drawOverlay(); }));
+$('not').addEventListener('input', () => { S.not = $('not').value; save(); drawOverlay(); });
+$('tamAd').addEventListener('change', () => { S.tamAd = $('tamAd').checked; save(); drawOverlay(); });
+
+/* ---------- Projeler ---------- */
+const logoImgs = {};
+function logoFor(p){
+  if (!p || !p.logo) return null;
+  let im = logoImgs[p.id];
+  if (!im || im._src !== p.logo){ im = new Image(); im._src = p.logo; im.onload = drawOverlay; im.src = p.logo; logoImgs[p.id] = im; }
+  return im.complete && im.naturalWidth ? im : null;
+}
+function renderPill(){
+  const p = active();
+  $('projPillTxt').textContent = p ? (p.kod || 'Adsız proje') : 'Proje seç';
+  $('projPill').classList.toggle('empty', !p);
+}
+function renderChips(){
+  const L = $('projList'); L.textContent = '';
+  const mk = (id, label, cls) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'pchip' + (cls ? ' ' + cls : '');
+    b.textContent = label;
+    if (cls !== 'add'){ b.setAttribute('aria-pressed', String(S.active === id));
+      b.onclick = () => { S.active = id; save(); renderProjects(); drawOverlay(); }; }
+    L.appendChild(b); return b;
+  };
+  mk(null, 'Yok');
+  S.projects.forEach(p => mk(p.id, p.kod || 'Adsız proje'));
+  mk(null, '+ Yeni proje', 'add').onclick = () => {
+    const p = { id: uid(), kod: '', ad: '' }; S.projects.push(p); S.active = p.id; save();
+    renderProjects(); drawOverlay(); $('pKod').focus();
+  };
+  renderPill();
+}
+let delArmed = null;
+function renderEdit(){
+  const p = active(); $('projEdit').hidden = !p; if (!p) return;
+  $('pKod').value = p.kod; $('pKod').placeholder = 'ör. Adana-TERRP-W3'; $('pAd').value = p.ad || '';
+  const box = $('logoBox'); box.textContent = '';
+  if (p.logo){ const im = document.createElement('img'); im.src = p.logo; im.alt = 'Proje logosu'; box.appendChild(im); }
+  else box.textContent = 'Logo yok';
+  $('logoDel').hidden = !p.logo;
+  clearTimeout(delArmed); delArmed = null; $('pDel').textContent = 'Projeyi sil';
+}
+function renderProjects(){ renderChips(); renderEdit(); }
+$('pKod').addEventListener('input', () => { const p = active(); if (!p) return; p.kod = $('pKod').value; save(); renderChips(); drawOverlay(); });
+$('pAd').addEventListener('input', () => { const p = active(); if (!p) return; p.ad = $('pAd').value; save(); drawOverlay(); });
+$('logoPick').addEventListener('change', e => {
+  const f = e.target.files && e.target.files[0]; e.target.value = ''; const p = active(); if (!f || !p) return;
+  const img = new Image();
+  img.onload = () => {
+    const k = Math.min(1, 480 / Math.max(img.naturalWidth || 480, img.naturalHeight || 480));
+    const c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round((img.naturalWidth || 480) * k)); c.height = Math.max(1, Math.round((img.naturalHeight || 240) * k));
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    const prev = p.logo; p.logo = c.toDataURL('image/png');
+    if (!save()){ p.logo = prev; $('logoBox').textContent = 'Kaydedilemedi'; return; }
+    renderEdit(); drawOverlay();
+  };
+  img.onerror = () => { $('logoBox').textContent = 'Açılamadı'; };
+  img.src = URL.createObjectURL(f);
+});
+$('logoDel').onclick = () => { const p = active(); if (!p) return; delete p.logo; save(); renderEdit(); drawOverlay(); };
+$('pDel').onclick = () => {
+  const p = active(); if (!p) return;
+  if (!delArmed){ $('pDel').textContent = 'Emin misin? Tekrar dokun'; delArmed = setTimeout(() => { delArmed = null; $('pDel').textContent = 'Projeyi sil'; }, 3000); return; }
+  S.projects = S.projects.filter(q => q.id !== p.id); S.active = null; save(); renderProjects(); drawOverlay();
+};
+$('projPill').onclick = () => openSheet(true);
+renderProjects();
 $('boyut').addEventListener('input', () => { S.boyut = parseFloat($('boyut').value); save(); drawOverlay(); });
 document.querySelectorAll('[name=stil],[name=konum]').forEach(r => r.addEventListener('change', () => {
   S[r.name] = r.value; save(); drawOverlay(); }));
@@ -196,7 +315,9 @@ $('closeSheet').onclick = $('sheetBg').onclick = () => openSheet(false);
 /* ---------- Damga çizimi ---------- */
 function roundRect(x, X, Y, W, H, r){ x.beginPath(); x.moveTo(X+r,Y); x.arcTo(X+W,Y,X+W,Y+H,r); x.arcTo(X+W,Y+H,X,Y+H,r); x.arcTo(X,Y+H,X,Y,r); x.arcTo(X,Y,X+W,Y,r); x.closePath(); }
 function stampLines(date, gps){
-  const extra = [S.proje.trim(), S.not.trim()].filter(Boolean);
+  const p = active(), extra = [];
+  if (p){ if (p.kod.trim()) extra.push(p.kod.trim()); if (S.tamAd && p.ad && p.ad.trim()) extra.push(p.ad.trim()); }
+  if (S.not.trim()) extra.push(S.not.trim());
   if (S.gps && gps) extra.push(fmtGps(gps));
   return { head: fmtDate(date), extra };
 }
@@ -206,15 +327,27 @@ function drawStamp(x, ox, oy, W, H, date, gps){
   const s = Math.max(W, H) / 1000 * S.boyut;
   const m = 22*s, pad = 14*s;
   x.save();
+  const logo = logoFor(active());
+  // Logo: damganın hemen üstünde, aynı köşeye hizalı, beyaz zemin üzerinde
+  const drawLogo = (edgeX, bottomY, maxW) => {
+    if (!logo) return;
+    const pp = 7*s; let lh = 54*s, lw = lh * logo.naturalWidth / logo.naturalHeight;
+    const lim = Math.min(maxW, 260*s) - 2*pp; if (lw > lim){ lh *= lim / lw; lw = lim; }
+    const pw = lw + 2*pp, ph = lh + 2*pp, px = sag ? edgeX - pw : edgeX, py = bottomY - ph;
+    x.save(); x.shadowColor = 'rgba(0,0,0,.25)'; x.shadowBlur = 6*s;
+    x.fillStyle = 'rgba(255,255,255,.94)'; roundRect(x, px, py, pw, ph, 8*s); x.fill(); x.restore();
+    x.drawImage(logo, px+pp, py+pp, lw, lh);
+  };
   if (S.stil === 'retro'){
-    const f1 = 34*s, f2 = 20*s;
+    const f1 = 34*s, f2 = 20*s, mono = getComputedStyle(document.documentElement).getPropertyValue('--mono');
     x.textAlign = sag ? 'right' : 'left'; x.textBaseline = 'alphabetic';
     const X = sag ? ox+W-m : ox+m; let Y = oy+H-m;
-    x.shadowColor = 'rgba(0,0,0,.65)'; x.shadowBlur = 6*s; x.fillStyle = '#ff8a1f';
-    x.font = `500 ${f2}px ${getComputedStyle(document.documentElement).getPropertyValue('--mono')}`;
-    for (let i = extra.length-1; i >= 0; i--){ x.fillText(extra[i], X, Y); Y -= f2*1.35; }
-    x.font = `700 ${f1}px ${getComputedStyle(document.documentElement).getPropertyValue('--mono')}`;
-    x.fillText(head, X, Y);
+    x.save(); x.shadowColor = 'rgba(0,0,0,.65)'; x.shadowBlur = 6*s; x.fillStyle = '#ff8a1f';
+    x.font = `500 ${f2}px ${mono}`;
+    for (let i = extra.length-1; i >= 0; i--){ x.fillText(extra[i], X, Y, W-2*m); Y -= f2*1.35; }
+    x.font = `700 ${f1}px ${mono}`;
+    x.fillText(head, X, Y, W-2*m); x.restore();
+    drawLogo(X, Y - f1 - 10*s, W-2*m);
   } else {
     const f1 = 30*s, f2 = 20*s, sans = 'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
     x.font = `700 ${f1}px ${sans}`; const w1 = x.measureText(head).width;
@@ -227,6 +360,7 @@ function drawStamp(x, ox, oy, W, H, date, gps){
     x.font = `700 ${f1}px ${sans}`; x.fillText(head, bx+pad, by+pad, bw-2*pad);
     x.font = `500 ${f2}px ${sans}`; x.fillStyle = 'rgba(255,255,255,.9)';
     extra.forEach((t, i) => x.fillText(t, bx+pad, by+pad+f1*1.18+i*f2*1.35, bw-2*pad));
+    drawLogo(sag ? bx+bw : bx, by - 8*s, bw);
   }
   x.restore();
 }
