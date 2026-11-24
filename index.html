@@ -73,8 +73,8 @@ button{cursor:pointer}
 
 /* İnceleme ekranı */
 .review{position:fixed;inset:0;background:var(--bg);display:grid;grid-template-rows:1fr auto;z-index:5}
-.review .pic{min-height:0;display:grid;place-items:center;background:#000;padding-top:env(safe-area-inset-top,0px)}
-.review img{max-width:100%;max-height:100%;object-fit:contain;display:block;-webkit-touch-callout:default}
+.review .pic{min-height:0;position:relative;background:#000;margin-top:env(safe-area-inset-top,0px)}
+.review img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;-webkit-touch-callout:default}
 .review-bar{display:grid;gap:12px;padding:14px max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 16px) max(16px,env(safe-area-inset-left,0px));background:var(--panel);border-top:1px solid var(--line)}
 .review-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted)}
@@ -194,7 +194,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
       <div class="field"><span class="lbl">Stil</span>
         <div class="seg"><label><input type="radio" name="stil" id="stil-serit" value="serit" checked>Şerit</label><label><input type="radio" name="stil" id="stil-retro" value="retro">Retro</label></div>
       </div>
-      <div class="field"><span class="lbl">Köşe</span>
+      <div class="field"><span class="lbl">Tarih köşesi</span>
         <div class="seg"><label><input type="radio" name="konum" id="konum-sol" value="sol">Sol</label><label><input type="radio" name="konum" id="konum-sag" value="sag" checked>Sağ</label></div>
       </div>
     </div>
@@ -314,55 +314,75 @@ $('closeSheet').onclick = $('sheetBg').onclick = () => openSheet(false);
 
 /* ---------- Damga çizimi ---------- */
 function roundRect(x, X, Y, W, H, r){ x.beginPath(); x.moveTo(X+r,Y); x.arcTo(X+W,Y,X+W,Y+H,r); x.arcTo(X+W,Y+H,X,Y+H,r); x.arcTo(X,Y+H,X,Y,r); x.arcTo(X,Y,X+W,Y,r); x.closePath(); }
-function stampLines(date, gps){
-  const p = active(), extra = [];
-  if (p){ if (p.kod.trim()) extra.push(p.kod.trim()); if (S.tamAd && p.ad && p.ad.trim()) extra.push(p.ad.trim()); }
-  if (S.not.trim()) extra.push(S.not.trim());
-  if (S.gps && gps) extra.push(fmtGps(gps));
-  return { head: fmtDate(date), extra };
+const SANS = 'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+function wrapText(x, text, maxW){
+  const out = []; let cur = '';
+  for (const w of text.split(/\s+/)){ const t = cur ? cur + ' ' + w : w;
+    if (cur && x.measureText(t).width > maxW){ out.push(cur); cur = w; } else cur = t; }
+  if (cur) out.push(cur); return out;
+}
+// İki blok: tarih bloğu seçilen köşede, proje bloğu karşı köşede (daha büyük yazı)
+function stampBlocks(date, gps){
+  const p = active(), info = [{ t: fmtDate(date), f: 30, b: 700 }], proj = [];
+  if (S.not.trim()) info.push({ t: S.not.trim(), f: 20, b: 500 });
+  if (S.gps && gps) info.push({ t: fmtGps(gps), f: 20, b: 500 });
+  if (p){
+    if (p.kod.trim()) proj.push({ t: p.kod.trim(), f: 34, b: 700 });
+    if (S.tamAd && p.ad && p.ad.trim()) proj.push({ t: p.ad.trim(), f: 25, b: 600, wrap: true });
+  }
+  return { info, proj, p };
 }
 function drawStamp(x, ox, oy, W, H, date, gps){
-  const { head, extra } = stampLines(date, gps);
-  const sag = S.konum === 'sag';
-  const s = Math.max(W, H) / 1000 * S.boyut;
-  const m = 22*s, pad = 14*s;
-  x.save();
-  const logo = logoFor(active());
-  // Logo: damganın hemen üstünde, aynı köşeye hizalı, beyaz zemin üzerinde
-  const drawLogo = (edgeX, bottomY, maxW) => {
-    if (!logo) return;
-    const pp = 7*s; let lh = 54*s, lw = lh * logo.naturalWidth / logo.naturalHeight;
-    const lim = Math.min(maxW, 260*s) - 2*pp; if (lw > lim){ lh *= lim / lw; lw = lim; }
-    const pw = lw + 2*pp, ph = lh + 2*pp, px = sag ? edgeX - pw : edgeX, py = bottomY - ph;
+  const { info, proj, p } = stampBlocks(date, gps);
+  const retro = S.stil === 'retro';
+  const s = Math.max(W, H) / 1000 * S.boyut, m = 22*s, pad = retro ? 0 : 14*s, LH = 1.3;
+  const fam = retro ? getComputedStyle(document.documentElement).getPropertyValue('--mono') : SANS;
+  const font = l => `${l.b} ${l.f*s}px ${fam}`;
+  const layout = (lines, maxW) => {
+    const rows = []; let w = 0;
+    for (const l of lines){ x.font = font(l);
+      for (const t of (l.wrap ? wrapText(x, l.t, maxW - 2*pad) : [l.t])){
+        w = Math.max(w, Math.min(x.measureText(t).width, maxW - 2*pad)); rows.push({ t, l }); } }
+    const h = rows.reduce((a, r, i) => a + r.l.f*s*(i === rows.length-1 ? 1 : LH), 0);
+    return { rows, w: w + 2*pad, h: h + 2*pad };
+  };
+  const draw = (B, side, bottom) => {
+    const right = side === 'sag', bx = right ? ox+W-m-B.w : ox+m, by = bottom - B.h;
+    x.save();
+    if (!retro){
+      x.fillStyle = 'rgba(12,14,17,.62)'; roundRect(x, bx, by, B.w, B.h, 10*s); x.fill();
+      x.fillStyle = '#ff9a3c'; x.fillRect(bx, by+pad*.7, Math.max(2, 4*s), B.h-pad*1.4);
+    } else { x.shadowColor = 'rgba(0,0,0,.65)'; x.shadowBlur = 6*s; }
+    x.textBaseline = 'top'; x.textAlign = retro && right ? 'right' : 'left';
+    let y = by + pad;
+    B.rows.forEach(r => {
+      x.font = font(r.l);
+      x.fillStyle = retro ? '#ff8a1f' : (r.l.b === 700 ? '#fff' : 'rgba(255,255,255,.92)');
+      x.fillText(r.t, retro ? (right ? bx+B.w : bx) : bx+pad, y, B.w - 2*pad);
+      y += r.l.f*s*LH;
+    });
+    x.restore();
+    return { x: bx, y: by, w: B.w, right };
+  };
+  const dSide = S.konum === 'sag' ? 'sag' : 'sol', pSide = dSide === 'sag' ? 'sol' : 'sag', full = W - 2*m;
+  const D = layout(info, full), dBox = draw(D, dSide, oy+H-m);
+  let pBox = null;
+  if (proj.length){
+    let avail = W - 3*m - D.w, bottom = oy+H-m;
+    if (avail < 0.3*W){ avail = full; bottom = dBox.y - 10*s; }   // yer yoksa tarih bloğunun üstüne çıkar
+    pBox = draw(layout(proj, avail), pSide, bottom);
+  }
+  // Logo: proje bloğunun (yoksa tarih bloğunun) üstünde, beyaz zeminde
+  const logo = logoFor(p);
+  if (logo){
+    const t = pBox || dBox, pp = 7*s;
+    let lh = 54*s, lw = lh * logo.naturalWidth / logo.naturalHeight;
+    const lim = Math.min(Math.max(t.w, 180*s), 260*s, full) - 2*pp; if (lw > lim){ lh *= lim / lw; lw = lim; }
+    const pw = lw + 2*pp, ph = lh + 2*pp, px = t.right ? t.x + t.w - pw : t.x, py = t.y - 8*s - ph;
     x.save(); x.shadowColor = 'rgba(0,0,0,.25)'; x.shadowBlur = 6*s;
     x.fillStyle = 'rgba(255,255,255,.94)'; roundRect(x, px, py, pw, ph, 8*s); x.fill(); x.restore();
     x.drawImage(logo, px+pp, py+pp, lw, lh);
-  };
-  if (S.stil === 'retro'){
-    const f1 = 34*s, f2 = 20*s, mono = getComputedStyle(document.documentElement).getPropertyValue('--mono');
-    x.textAlign = sag ? 'right' : 'left'; x.textBaseline = 'alphabetic';
-    const X = sag ? ox+W-m : ox+m; let Y = oy+H-m;
-    x.save(); x.shadowColor = 'rgba(0,0,0,.65)'; x.shadowBlur = 6*s; x.fillStyle = '#ff8a1f';
-    x.font = `500 ${f2}px ${mono}`;
-    for (let i = extra.length-1; i >= 0; i--){ x.fillText(extra[i], X, Y, W-2*m); Y -= f2*1.35; }
-    x.font = `700 ${f1}px ${mono}`;
-    x.fillText(head, X, Y, W-2*m); x.restore();
-    drawLogo(X, Y - f1 - 10*s, W-2*m);
-  } else {
-    const f1 = 30*s, f2 = 20*s, sans = 'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
-    x.font = `700 ${f1}px ${sans}`; const w1 = x.measureText(head).width;
-    x.font = `500 ${f2}px ${sans}`; const w2 = Math.max(0, ...extra.map(t => x.measureText(t).width));
-    const bw = Math.min(W-2*m, Math.max(w1, w2) + 2*pad), bh = pad*2 + f1 + extra.length*f2*1.35;
-    const bx = sag ? ox+W-m-bw : ox+m, by = oy+H-m-bh;
-    x.fillStyle = 'rgba(12,14,17,.62)'; roundRect(x, bx, by, bw, bh, 10*s); x.fill();
-    x.fillStyle = '#ff9a3c'; x.fillRect(bx, by+pad*.7, Math.max(2, 4*s), bh-pad*1.4);
-    x.textAlign = 'left'; x.textBaseline = 'top'; x.fillStyle = '#fff';
-    x.font = `700 ${f1}px ${sans}`; x.fillText(head, bx+pad, by+pad, bw-2*pad);
-    x.font = `500 ${f2}px ${sans}`; x.fillStyle = 'rgba(255,255,255,.9)';
-    extra.forEach((t, i) => x.fillText(t, bx+pad, by+pad+f1*1.18+i*f2*1.35, bw-2*pad));
-    drawLogo(sag ? bx+bw : bx, by - 8*s, bw);
   }
-  x.restore();
 }
 
 /* ---------- GPS ---------- */
