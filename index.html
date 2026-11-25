@@ -46,6 +46,10 @@ button{cursor:pointer}
 .chip[data-s="ok"] .dot{background:var(--ok)} .chip[data-s="wait"] .dot{background:var(--warn);animation:blink 1s infinite}
 .chip[data-s="err"] .dot{background:var(--err)}
 @keyframes blink{50%{opacity:.3}}
+.top-r{display:flex;align-items:center;gap:8px;flex:none}
+.lang{display:flex;height:34px;padding:3px;border-radius:999px;background:var(--panel);border:1px solid var(--line);gap:2px}
+.lang span{display:grid;place-items:center;min-width:32px;border-radius:999px;font:700 12px var(--sans);letter-spacing:.04em;color:var(--muted)}
+.lang span.on{background:var(--accent);color:var(--accent-ink)}
 .icon{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);flex:none}
 .icon svg{width:20px;height:20px}
 
@@ -123,13 +127,16 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 <main id="app">
   <header class="top">
     <div class="top-l">
-      <button class="proj-pill" id="projPill" type="button" aria-label="Proje seç"><span id="projPillTxt">Proje seç</span>
+      <button class="proj-pill" id="projPill" type="button" data-i18n-aria="pickProject"><span id="projPillTxt">Proje seç</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
       <span class="chip" id="gpsChip" data-s="off"><i class="dot"></i><span id="gpsTxt">GPS kapalı</span></span>
     </div>
-    <button class="icon" id="settingsBtn" type="button" aria-label="Ayarlar">
+    <div class="top-r">
+    <button class="lang" id="langBtn" type="button" aria-label="Dil / Language"><span data-l="tr">TR</span><span data-l="en">EN</span></button>
+    <button class="icon" id="settingsBtn" type="button" data-i18n-aria="settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
     </button>
+    </div>
   </header>
 
   <section class="stage" id="stage">
@@ -137,72 +144,74 @@ input[type=range]{width:100%;accent-color:var(--accent)}
     <canvas id="overlay"></canvas>
     <div class="flash" id="flash"></div>
     <div class="cam-msg" id="camMsg" hidden>
-      <p id="camMsgTxt">Kamera açılıyor…</p>
-      <button class="btn primary" id="retryCam" type="button">Kamerayı aç</button>
+      <p id="camMsgTxt"></p>
+      <button class="btn primary" id="retryCam" type="button" data-i18n="openCam">Kamerayı aç</button>
     </div>
   </section>
 
   <footer class="bottom">
-    <label class="round" for="pick" aria-label="Galeriden fotoğraf seç">
+    <label class="round" for="pick" data-i18n-aria="pickGallery">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 16l5-5 4 4 3-3 6 6"/><circle cx="16" cy="9" r="1.6"/></svg>
     </label>
     <input class="sr" type="file" id="pick" accept="image/*">
-    <button class="shutter" id="shutter" type="button" aria-label="Fotoğraf çek" disabled></button>
-    <button class="round" id="flip" type="button" aria-label="Ön/arka kamera">
+    <button class="shutter" id="shutter" type="button" data-i18n-aria="takePhoto" disabled></button>
+    <button class="round" id="flip" type="button" data-i18n-aria="flipCam">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 0 1-14 5.3M4 12A8 8 0 0 1 18 6.7"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>
     </button>
   </footer>
 </main>
 
 <section class="review" id="review" hidden>
-  <div class="pic"><img id="shot" alt="Damgalı fotoğraf"></div>
+  <div class="pic"><img id="shot" data-i18n-alt="stampedPhoto" alt=""></div>
   <div class="review-bar">
-    <label class="field"><span class="lbl">Tarih ve saat</span><input type="datetime-local" id="shotDate" step="1"></label>
+    <label class="field"><span class="lbl" data-i18n="dateTime">Tarih ve saat</span><input type="datetime-local" id="shotDate" step="1"></label>
     <div class="meta" id="meta"></div>
     <div class="review-row">
-      <button class="btn" id="again" type="button">Vazgeç</button>
-      <button class="btn primary" id="save" type="button">Kaydet</button>
+      <button class="btn" id="again" type="button" data-i18n="cancel">Vazgeç</button>
+      <button class="btn primary" id="save" type="button" data-i18n="save">Kaydet</button>
     </div>
     <p id="msg" aria-live="polite"></p>
   </div>
 </section>
 
 <div class="sheet-bg" id="sheetBg" hidden></div>
-<section class="sheet" id="sheet" hidden aria-label="Ayarlar">
+<section class="sheet" id="sheet" hidden data-i18n-aria="settings">
   <div class="grab"></div>
   <div class="form">
-    <div class="sheet-head"><h2>Damga ayarları</h2><button class="btn" id="closeSheet" type="button">Tamam</button></div>
-    <div class="field"><span class="lbl">Proje</span><div class="projlist" id="projList"></div></div>
+    <div class="sheet-head"><h2 data-i18n="settingsTitle">Damga ayarları</h2><button class="btn" id="closeSheet" type="button" data-i18n="done">Tamam</button></div>
+    <div class="field"><span class="lbl" data-i18n="project">Proje</span><div class="projlist" id="projList"></div></div>
     <div class="projedit" id="projEdit" hidden>
-      <label class="field"><span class="lbl">Kısa ad (damgada görünür)</span><input type="text" id="pKod" maxlength="40" autocomplete="off"></label>
-      <label class="field"><span class="lbl">İşin tam adı</span><input type="text" id="pAd" maxlength="120" autocomplete="off" placeholder="İsteğe bağlı"></label>
+      <label class="field"><span class="lbl" data-i18n="shortName">Kısa ad (damgada görünür)</span><input type="text" id="pKod" maxlength="40" autocomplete="off" data-i18n-ph="shortNamePh"></label>
+      <label class="field"><span class="lbl" data-i18n="fullName">İşin tam adı</span><input type="text" id="pAd" maxlength="120" autocomplete="off" data-i18n-ph="optional"></label>
+      <label class="field"><span class="lbl" data-i18n="fullNameEn">İşin tam adı (İngilizce)</span><input type="text" id="pAdEn" maxlength="120" autocomplete="off" data-i18n-ph="optional">
+        <span class="hint" data-i18n="fullNameHint">Damgada seçili dile göre yazılır.</span></label>
       <div class="field"><span class="lbl">Logo</span>
         <div class="logo-row">
-          <div class="logo-box" id="logoBox">Logo yok</div>
-          <label class="btn small" for="logoPick">Logo yükle</label>
+          <div class="logo-box" id="logoBox"></div>
+          <label class="btn small" for="logoPick" data-i18n="uploadLogo">Logo yükle</label>
           <input class="sr" type="file" id="logoPick" accept="image/png,image/jpeg,image/webp,image/svg+xml">
-          <button class="btn small" id="logoDel" type="button">Kaldır</button>
+          <button class="btn small" id="logoDel" type="button" data-i18n="remove">Kaldır</button>
         </div>
-        <span class="hint">Şeffaf arka planlı PNG en iyi sonucu verir. Logo fotoğrafın üst köşesinde beyaz zeminde görünür.</span>
+        <span class="hint" data-i18n="logoHint">Şeffaf arka planlı PNG en iyi sonucu verir.</span>
       </div>
-      <button class="btn small danger" id="pDel" type="button">Projeyi sil</button>
+      <button class="btn small danger" id="pDel" type="button" data-i18n="deleteProject">Projeyi sil</button>
     </div>
-    <label class="switch"><span><b>İşin tam adını yaz</b><br><span class="hint">Kısa adın altına ayrı satır olarak</span></span><input type="checkbox" id="tamAd"></label>
-    <label class="field"><span class="lbl">Not</span><input type="text" id="not" placeholder="ör. Km 2+450 boru döşeme" maxlength="80" autocomplete="off"></label>
-    <label class="switch"><span><b>GPS koordinatı</b><br><span class="hint">Enlem ve boylamı damgaya ekler</span></span><input type="checkbox" id="gps" checked></label>
+    <label class="switch"><span><b data-i18n="showFull">İşin tam adını yaz</b><br><span class="hint" data-i18n="showFullHint">Kısa adın altına ayrı satır olarak</span></span><input type="checkbox" id="tamAd"></label>
+    <label class="field"><span class="lbl" data-i18n="note">Not</span><input type="text" id="not" data-i18n-ph="notePh" maxlength="80" autocomplete="off"></label>
+    <label class="switch"><span><b data-i18n="gpsCoord">GPS koordinatı</b><br><span class="hint" data-i18n="gpsHint">Enlem ve boylamı damgaya ekler</span></span><input type="checkbox" id="gps" checked></label>
     <div class="two">
-      <div class="field"><span class="lbl">Stil</span>
-        <div class="seg"><label><input type="radio" name="stil" id="stil-serit" value="serit" checked>Şerit</label><label><input type="radio" name="stil" id="stil-retro" value="retro">Retro</label></div>
+      <div class="field"><span class="lbl" data-i18n="style">Stil</span>
+        <div class="seg"><label><input type="radio" name="stil" id="stil-serit" value="serit" checked><span data-i18n="styleBand">Şerit</span></label><label><input type="radio" name="stil" id="stil-retro" value="retro"><span data-i18n="styleRetro">Retro</span></label></div>
       </div>
-      <div class="field"><span class="lbl">Tarih köşesi</span>
-        <div class="seg"><label><input type="radio" name="konum" id="konum-sol" value="sol">Sol</label><label><input type="radio" name="konum" id="konum-sag" value="sag" checked>Sağ</label></div>
+      <div class="field"><span class="lbl" data-i18n="dateCorner">Tarih köşesi</span>
+        <div class="seg"><label><input type="radio" name="konum" id="konum-sol" value="sol"><span data-i18n="left">Sol</span></label><label><input type="radio" name="konum" id="konum-sag" value="sag" checked><span data-i18n="right">Sağ</span></label></div>
       </div>
     </div>
-    <div class="field"><span class="lbl">Logo yeri</span>
-      <div class="seg"><label><input type="radio" name="logoYer" id="logoyer-solust" value="solust">Sol üst</label><label><input type="radio" name="logoYer" id="logoyer-sagust" value="sagust" checked>Sağ üst</label></div>
+    <div class="field"><span class="lbl" data-i18n="logoPos">Logo yeri</span>
+      <div class="seg"><label><input type="radio" name="logoYer" id="logoyer-solust" value="solust"><span data-i18n="topLeft">Sol üst</span></label><label><input type="radio" name="logoYer" id="logoyer-sagust" value="sagust" checked><span data-i18n="topRight">Sağ üst</span></label></div>
     </div>
-    <label class="field"><span class="lbl">Yazı boyutu</span><input type="range" id="boyut" min="0.6" max="1.8" step="0.1" value="1"></label>
-    <p class="hint">Ayarlar bu telefonda saklanır. Kaydet, paylaşım menüsünü açar: “Görüntüyü Kaydet”i seç.</p>
+    <label class="field"><span class="lbl" data-i18n="textSize">Yazı boyutu</span><input type="range" id="boyut" min="0.6" max="1.8" step="0.1" value="1"></label>
+    <p class="hint" data-i18n="footHint">Ayarlar bu telefonda saklanır.</p>
   </div>
 </section>
 
@@ -213,14 +222,72 @@ const video = $('video'), overlay = $('overlay'), stage = $('stage');
 const p2 = n => String(n).padStart(2, '0');
 const fmtDate = d => `${p2(d.getDate())}.${p2(d.getMonth()+1)}.${d.getFullYear()}  ${p2(d.getHours())}:${p2(d.getMinutes())}:${p2(d.getSeconds())}`;
 const toLocal = d => `${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}T${p2(d.getHours())}:${p2(d.getMinutes())}:${p2(d.getSeconds())}`;
-const fmtGps = g => `${Math.abs(g.lat).toFixed(5)}° ${g.lat>=0?'K':'G'}  ${Math.abs(g.lon).toFixed(5)}° ${g.lon>=0?'D':'B'}${g.acc?`  ±${Math.round(g.acc)} m`:''}`;
+/* ---------- Dil ---------- */
+const I18N = {
+  tr: {
+    title:'Tarih Damgası', pickProject:'Proje seç', settings:'Ayarlar', openCam:'Kamerayı aç',
+    pickGallery:'Galeriden fotoğraf seç', takePhoto:'Fotoğraf çek', flipCam:'Ön/arka kamera', stampedPhoto:'Damgalı fotoğraf',
+    dateTime:'Tarih ve saat', cancel:'Vazgeç', save:'Kaydet', settingsTitle:'Damga ayarları', done:'Tamam',
+    project:'Proje', shortName:'Kısa ad (damgada görünür)', shortNamePh:'ör. Adana-TERRP-W3', fullName:'İşin tam adı (Türkçe)', fullNameEn:'İşin tam adı (İngilizce)', fullNameHint:'Damgaya seçili dile göre Türkçe ya da İngilizce ad yazılır.', optional:'İsteğe bağlı',
+    uploadLogo:'Logo yükle', remove:'Kaldır', noLogo:'Logo yok', logoFail:'Açılamadı', logoNoSpace:'Kaydedilemedi',
+    logoHint:'Şeffaf arka planlı PNG en iyi sonucu verir. Logo fotoğrafın üst köşesinde beyaz zeminde görünür.',
+    deleteProject:'Projeyi sil', confirmDelete:'Emin misin? Tekrar dokun', none:'Yok', newProject:'+ Yeni proje', untitled:'Adsız proje',
+    showFull:'İşin tam adını yaz', showFullHint:'Kısa adın altına ayrı satır olarak', note:'Not', notePh:'ör. Km 2+450 boru döşeme',
+    gpsCoord:'GPS koordinatı', gpsHint:'Enlem ve boylamı damgaya ekler', style:'Stil', styleBand:'Şerit', styleRetro:'Retro',
+    dateCorner:'Tarih köşesi', left:'Sol', right:'Sağ', logoPos:'Logo yeri', topLeft:'Sol üst', topRight:'Sağ üst', textSize:'Yazı boyutu',
+    footHint:'Ayarlar bu telefonda saklanır. Kaydet, paylaşım menüsünü açar: “Görüntüyü Kaydet”i seç.',
+    gpsOff:'GPS kapalı', gpsWait:'Konum aranıyor…', gpsDenied:'Konum izni yok', gpsFail:'Konum alınamadı', gpsNone:'GPS yok',
+    camNoSupport:'Bu tarayıcı canlı kamerayı desteklemiyor. Soldaki düğmeyle fotoğraf seçebilirsin.',
+    camDenied:'Kamera izni verilmedi. Ayarlar → Safari → Kamera’dan izin ver, sonra tekrar dene.', camFail:'Kamera açılamadı.',
+    photoFail:'Bu fotoğraf açılamadı. JPG veya PNG dene.',
+    mDate:'Tarih', mLoc:'Konum', fromShot:'çekim anı', fromManual:'elle düzenlendi', fromExif:'fotoğraftan okundu', fromFile:'dosya tarihi',
+    gpsNow:'şu anki', gpsExif:'fotoğraftan okundu', gpsNo:'yok',
+    preparing:'Hazırlanıyor, bir saniye…', savedShare:'Paylaşım menüsünden kaydedildi.', cancelled:'Vazgeçildi.',
+    downloaded:'İndirildi. Olmadıysa fotoğrafa basılı tutup kaydet.', N:'K', S:'G', E:'D', W:'B'
+  },
+  en: {
+    title:'Site Stamp', pickProject:'Choose project', settings:'Settings', openCam:'Open camera',
+    pickGallery:'Choose from library', takePhoto:'Take photo', flipCam:'Front/back camera', stampedPhoto:'Stamped photo',
+    dateTime:'Date and time', cancel:'Discard', save:'Save', settingsTitle:'Stamp settings', done:'Done',
+    project:'Project', shortName:'Short name (shown on stamp)', shortNamePh:'e.g. Adana-TERRP-W3', fullName:'Full name (Turkish)', fullNameEn:'Full name (English)', fullNameHint:'The stamp shows the Turkish or English name to match the selected language.', optional:'Optional',
+    uploadLogo:'Upload logo', remove:'Remove', noLogo:'No logo', logoFail:'Could not open', logoNoSpace:'Could not save',
+    logoHint:'A PNG with a transparent background works best. The logo appears on a white plate in a top corner of the photo.',
+    deleteProject:'Delete project', confirmDelete:'Sure? Tap again', none:'None', newProject:'+ New project', untitled:'Untitled project',
+    showFull:'Show full project name', showFullHint:'On its own line under the short name', note:'Note', notePh:'e.g. Km 2+450 pipe laying',
+    gpsCoord:'GPS coordinates', gpsHint:'Adds latitude and longitude to the stamp', style:'Style', styleBand:'Band', styleRetro:'Retro',
+    dateCorner:'Date corner', left:'Left', right:'Right', logoPos:'Logo position', topLeft:'Top left', topRight:'Top right', textSize:'Text size',
+    footHint:'Settings are kept on this phone. Save opens the share sheet: choose “Save Image”.',
+    gpsOff:'GPS off', gpsWait:'Finding location…', gpsDenied:'No location permission', gpsFail:'Location unavailable', gpsNone:'No GPS',
+    camNoSupport:'This browser does not support the live camera. Use the button on the left to choose a photo.',
+    camDenied:'Camera access was denied. Allow it in Settings → Safari → Camera, then try again.', camFail:'Could not open the camera.',
+    photoFail:'This photo could not be opened. Try a JPG or PNG.',
+    mDate:'Date', mLoc:'Location', fromShot:'time of capture', fromManual:'edited by hand', fromExif:'read from photo', fromFile:'file date',
+    gpsNow:'current', gpsExif:'read from photo', gpsNo:'none',
+    preparing:'Preparing, one moment…', savedShare:'Saved from the share sheet.', cancelled:'Cancelled.',
+    downloaded:'Downloaded. If not, press and hold the photo to save it.', N:'N', S:'S', E:'E', W:'W'
+  }
+};
+let LANG = 'tr';
+try { LANG = localStorage.getItem('damga-lang') || ((navigator.language || 'tr').toLowerCase().startsWith('tr') ? 'tr' : 'en'); } catch(e) {}
+if (!I18N[LANG]) LANG = 'tr';
+const t = k => (I18N[LANG][k] ?? I18N.tr[k] ?? k);
+const fmtGps = g => `${Math.abs(g.lat).toFixed(5)}° ${t(g.lat>=0?'N':'S')}  ${Math.abs(g.lon).toFixed(5)}° ${t(g.lon>=0?'E':'W')}${g.acc?`  ±${Math.round(g.acc)} m`:''}`;
+function applyStatic(){
+  document.documentElement.lang = LANG; document.title = t('title');
+  document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => el.setAttribute('aria-label', t(el.dataset.i18nAria)));
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => el.placeholder = t(el.dataset.i18nPh));
+  document.querySelectorAll('[data-i18n-alt]').forEach(el => el.alt = t(el.dataset.i18nAlt));
+  document.querySelectorAll('#langBtn [data-l]').forEach(el => el.classList.toggle('on', el.dataset.l === LANG));
+}
+applyStatic();
 
 /* ---------- Ayarlar ---------- */
 const uid = () => Math.random().toString(36).slice(2, 10);
 const DEFAULT_PROJECTS = [
-  { id:'w2', kod:'Adana-TERRP-W2', ad:'Pozantı Atıksu Arıtma Tesisi İnşaatı' },
-  { id:'w3', kod:'Adana-TERRP-W3', ad:'Pozantı-Akçatekir Kanalizasyon ve İçme Suyu Şebekesi Yapım İşi' },
-  { id:'w4', kod:'Adana-TERRP-W4', ad:'Adana Merkez Yağmur Suyu Yapım İşi' }
+  { id:'w2', kod:'Adana-TERRP-W2', ad:'Pozantı Atıksu Arıtma Tesisi İnşaatı', adEn:'Pozantı Wastewater Treatment Plant Project' },
+  { id:'w3', kod:'Adana-TERRP-W3', ad:'Pozantı-Akçatekir Kanalizasyon ve İçme Suyu Şebekesi Yapım İşi', adEn:'Pozantı – Akçatekir Sewerage and Water Supply Network Construction Works' },
+  { id:'w4', kod:'Adana-TERRP-W4', ad:'Adana Merkez Yağmur Suyu Yapım İşi', adEn:'Adana Central Stormwater Works' }
 ];
 const S = { not:'', gps:true, stil:'serit', konum:'sag', boyut:1, tamAd:false, projects:null, active:null, duzen:'kucuk', logoYer:'sagust' };
 try { Object.assign(S, JSON.parse(localStorage.getItem('damga') || '{}')); } catch(e) {}
@@ -230,6 +297,8 @@ if (!Array.isArray(S.projects)){
   if (old){ let p = S.projects.find(q => q.kod === old); if (!p){ p = { id: uid(), kod: old, ad: '' }; S.projects.push(p); } S.active = p.id; }
 }
 delete S.proje;
+// Önceki sürümden gelen hazır projelere İngilizce adları ekle
+S.projects.forEach(p => { const d = DEFAULT_PROJECTS.find(q => q.id === p.id); if (d && p.adEn === undefined) p.adEn = d.adEn; });
 const save = () => {
   try { localStorage.setItem('damga', JSON.stringify(S)); return true; }
   catch(e) { return false; }
@@ -251,7 +320,7 @@ function logoFor(p){
 }
 function renderPill(){
   const p = active();
-  $('projPillTxt').textContent = p ? (p.kod || 'Adsız proje') : 'Proje seç';
+  $('projPillTxt').textContent = p ? (p.kod || t('untitled')) : t('pickProject');
   $('projPill').classList.toggle('empty', !p);
 }
 function renderChips(){
@@ -263,9 +332,9 @@ function renderChips(){
       b.onclick = () => { S.active = id; save(); renderProjects(); drawOverlay(); }; }
     L.appendChild(b); return b;
   };
-  mk(null, 'Yok');
-  S.projects.forEach(p => mk(p.id, p.kod || 'Adsız proje'));
-  mk(null, '+ Yeni proje', 'add').onclick = () => {
+  mk(null, t('none'));
+  S.projects.forEach(p => mk(p.id, p.kod || t('untitled')));
+  mk(null, t('newProject'), 'add').onclick = () => {
     const p = { id: uid(), kod: '', ad: '' }; S.projects.push(p); S.active = p.id; save();
     renderProjects(); drawOverlay(); $('pKod').focus();
   };
@@ -274,16 +343,17 @@ function renderChips(){
 let delArmed = null;
 function renderEdit(){
   const p = active(); $('projEdit').hidden = !p; if (!p) return;
-  $('pKod').value = p.kod; $('pKod').placeholder = 'ör. Adana-TERRP-W3'; $('pAd').value = p.ad || '';
+  $('pKod').value = p.kod; $('pAd').value = p.ad || ''; $('pAdEn').value = p.adEn || '';
   const box = $('logoBox'); box.textContent = '';
-  if (p.logo){ const im = document.createElement('img'); im.src = p.logo; im.alt = 'Proje logosu'; box.appendChild(im); }
-  else box.textContent = 'Logo yok';
+  if (p.logo){ const im = document.createElement('img'); im.src = p.logo; im.alt = 'Logo'; box.appendChild(im); }
+  else box.textContent = t('noLogo');
   $('logoDel').hidden = !p.logo;
-  clearTimeout(delArmed); delArmed = null; $('pDel').textContent = 'Projeyi sil';
+  clearTimeout(delArmed); delArmed = null; $('pDel').textContent = t('deleteProject');
 }
 function renderProjects(){ renderChips(); renderEdit(); }
 $('pKod').addEventListener('input', () => { const p = active(); if (!p) return; p.kod = $('pKod').value; save(); renderChips(); drawOverlay(); });
 $('pAd').addEventListener('input', () => { const p = active(); if (!p) return; p.ad = $('pAd').value; save(); drawOverlay(); });
+$('pAdEn').addEventListener('input', () => { const p = active(); if (!p) return; p.adEn = $('pAdEn').value; save(); drawOverlay(); });
 $('logoPick').addEventListener('change', e => {
   const f = e.target.files && e.target.files[0]; e.target.value = ''; const p = active(); if (!f || !p) return;
   const img = new Image();
@@ -293,16 +363,16 @@ $('logoPick').addEventListener('change', e => {
     c.width = Math.max(1, Math.round((img.naturalWidth || 480) * k)); c.height = Math.max(1, Math.round((img.naturalHeight || 240) * k));
     c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
     const prev = p.logo; p.logo = c.toDataURL('image/png');
-    if (!save()){ p.logo = prev; $('logoBox').textContent = 'Kaydedilemedi'; return; }
+    if (!save()){ p.logo = prev; $('logoBox').textContent = t('logoNoSpace'); return; }
     renderEdit(); drawOverlay();
   };
-  img.onerror = () => { $('logoBox').textContent = 'Açılamadı'; };
+  img.onerror = () => { $('logoBox').textContent = t('logoFail'); };
   img.src = URL.createObjectURL(f);
 });
 $('logoDel').onclick = () => { const p = active(); if (!p) return; delete p.logo; save(); renderEdit(); drawOverlay(); };
 $('pDel').onclick = () => {
   const p = active(); if (!p) return;
-  if (!delArmed){ $('pDel').textContent = 'Emin misin? Tekrar dokun'; delArmed = setTimeout(() => { delArmed = null; $('pDel').textContent = 'Projeyi sil'; }, 3000); return; }
+  if (!delArmed){ $('pDel').textContent = t('confirmDelete'); delArmed = setTimeout(() => { delArmed = null; $('pDel').textContent = t('deleteProject'); }, 3000); return; }
   S.projects = S.projects.filter(q => q.id !== p.id); S.active = null; save(); renderProjects(); drawOverlay();
 };
 $('projPill').onclick = () => openSheet(true);
@@ -332,7 +402,8 @@ function stampBlocks(date, gps){
   if (S.gps && gps) info.push({ t: fmtGps(gps), f: 20, b: 500 });
   if (p){
     if (p.kod.trim()) proj.push({ t: p.kod.trim(), f: 34, b: 700 });
-    if (S.tamAd && p.ad && p.ad.trim()) proj.push({ t: p.ad.trim(), f: 25, b: 600, wrap: true });
+    const full = ((LANG === 'en' ? (p.adEn || p.ad) : (p.ad || p.adEn)) || '').trim();
+    if (S.tamAd && full) proj.push({ t: full, f: 25, b: 600, wrap: true });
   }
   return { info, proj, p };
 }
@@ -435,19 +506,21 @@ function drawStamp(x, ox, oy, W, H, date, gps){
 
 /* ---------- GPS ---------- */
 let gps = null, gpsWatch = null;
-function setChip(state, text){ $('gpsChip').dataset.s = state; $('gpsTxt').textContent = text; }
+let chip = { s:'off', k:'gpsOff' };
+function renderChip(){ $('gpsChip').dataset.s = chip.s; $('gpsTxt').textContent = chip.s === 'ok' && gps ? fmtGps(gps) : t(chip.k); }
+function setChip(s, k){ chip = { s, k }; renderChip(); }
 function startGps(){
-  if (!('geolocation' in navigator)){ setChip('err', 'GPS yok'); return; }
+  if (!('geolocation' in navigator)){ setChip('err', 'gpsNone'); return; }
   if (gpsWatch != null) return;
-  setChip('wait', 'Konum aranıyor…');
+  setChip('wait', 'gpsWait');
   gpsWatch = navigator.geolocation.watchPosition(p => {
     gps = { lat: p.coords.latitude, lon: p.coords.longitude, acc: p.coords.accuracy, t: Date.now() };
-    setChip('ok', fmtGps(gps)); drawOverlay();
+    setChip('ok', 'gpsOff'); drawOverlay();
   }, err => {
-    setChip('err', err.code === 1 ? 'Konum izni yok' : 'Konum alınamadı');
+    setChip('err', err.code === 1 ? 'gpsDenied' : 'gpsFail');
   }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 30000 });
 }
-function stopGps(){ if (gpsWatch != null) navigator.geolocation.clearWatch(gpsWatch); gpsWatch = null; gps = null; setChip('off', 'GPS kapalı'); }
+function stopGps(){ if (gpsWatch != null) navigator.geolocation.clearWatch(gpsWatch); gpsWatch = null; gps = null; setChip('off', 'gpsOff'); }
 
 /* ---------- Kamera ---------- */
 let stream = null, facing = 'environment';
@@ -470,18 +543,19 @@ function drawOverlay(){
 setInterval(drawOverlay, 1000);
 addEventListener('resize', drawOverlay);
 
-function camMessage(text){ $('camMsg').hidden = !text; $('camMsgTxt').textContent = text || ''; }
+let camKey = '';
+function camMessage(k){ camKey = k || ''; $('camMsg').hidden = !camKey; $('camMsgTxt').textContent = camKey ? t(camKey) : ''; }
 async function startCam(){
   if (stream) stream.getTracks().forEach(t => t.stop());
   stream = null; $('shutter').disabled = true;
-  if (!navigator.mediaDevices?.getUserMedia){ camMessage('Bu tarayıcı canlı kamerayı desteklemiyor. Soldaki düğmeyle fotoğraf seçebilirsin.'); $('retryCam').hidden = true; return; }
+  if (!navigator.mediaDevices?.getUserMedia){ camMessage('camNoSupport'); $('retryCam').hidden = true; return; }
   try {
     stream = await navigator.mediaDevices.getUserMedia({ audio: false,
       video: { facingMode: { ideal: facing }, width: { ideal: 4032 }, height: { ideal: 3024 } } });
     video.srcObject = stream; await video.play().catch(() => {});
     camMessage(''); $('shutter').disabled = false;
   } catch(e){
-    camMessage(e.name === 'NotAllowedError' ? 'Kamera izni verilmedi. Ayarlar → Safari → Kamera’dan izin ver, sonra tekrar dene.' : 'Kamera açılamadı.');
+    camMessage(e.name === 'NotAllowedError' ? 'camDenied' : 'camFail');
   }
 }
 video.addEventListener('loadedmetadata', drawOverlay);
@@ -504,8 +578,13 @@ function renderShot(){
   cur.name = `damga_${d.getFullYear()}${p2(d.getMonth()+1)}${p2(d.getDate())}_${p2(d.getHours())}${p2(d.getMinutes())}${p2(d.getSeconds())}.jpg`;
   cur.blob = null;
   c.toBlob(b => { cur.blob = b; if (cur.url) URL.revokeObjectURL(cur.url); cur.url = URL.createObjectURL(b); $('shot').src = cur.url; }, 'image/jpeg', 0.92);
-  const meta = [`<span>${W}×${H} px</span>`, `<span>Tarih: <b>${cur.from}</b></span>`];
-  if (S.gps) meta.push(`<span>Konum: <b>${cur.gps ? (cur.gpsFrom || 'şu anki') : 'yok'}</b></span>`);
+  renderMeta();
+}
+function renderMeta(){
+  if (!cur) return;
+  const W = cur.src.naturalWidth || cur.src.width, H = cur.src.naturalHeight || cur.src.height;
+  const meta = [`<span>${W}×${H} px</span>`, `<span>${t('mDate')}: <b>${t(cur.from)}</b></span>`];
+  if (S.gps) meta.push(`<span>${t('mLoc')}: <b>${t(cur.gps ? (cur.gpsFrom || 'gpsNow') : 'gpsNo')}</b></span>`);
   $('meta').innerHTML = meta.join('');
 }
 function openReview(){
@@ -518,24 +597,24 @@ $('shutter').onclick = () => {
   const c = document.createElement('canvas'); c.width = video.videoWidth; c.height = video.videoHeight;
   c.getContext('2d').drawImage(video, 0, 0);
   $('flash').classList.remove('go'); void $('flash').offsetWidth; $('flash').classList.add('go');
-  cur = { src: c, date: new Date(), gps: gps ? { ...gps } : null, from: 'çekim anı' };
+  cur = { src: c, date: new Date(), gps: gps ? { ...gps } : null, from: 'fromShot' };
   openReview();
 };
 $('shotDate').addEventListener('change', () => {
   const v = $('shotDate').value; if (!v) return;
-  cur.date = new Date(v); cur.from = 'elle düzenlendi'; renderShot();
+  cur.date = new Date(v); cur.from = 'fromManual'; renderShot();
 });
 $('again').onclick = () => { $('review').hidden = true; cur = null; startCam(); };
 
 $('save').onclick = async () => {
-  if (!cur?.blob){ $('msg').textContent = 'Hazırlanıyor, bir saniye…'; return; }
+  if (!cur?.blob){ $('msg').textContent = t('preparing'); return; }
   const file = new File([cur.blob], cur.name, { type: 'image/jpeg' });
   if (navigator.canShare && navigator.canShare({ files: [file] })){
-    try { await navigator.share({ files: [file] }); $('msg').textContent = 'Paylaşım menüsünden kaydedildi.'; $('msg').className = 'ok'; return; }
-    catch(e){ if (e.name === 'AbortError'){ $('msg').textContent = 'Vazgeçildi.'; $('msg').className = ''; return; } }
+    try { await navigator.share({ files: [file] }); $('msg').textContent = t('savedShare'); $('msg').className = 'ok'; return; }
+    catch(e){ if (e.name === 'AbortError'){ $('msg').textContent = t('cancelled'); $('msg').className = ''; return; } }
   }
   const a = document.createElement('a'); a.href = cur.url; a.download = cur.name; document.body.appendChild(a); a.click(); a.remove();
-  $('msg').textContent = 'İndirildi. Olmadıysa fotoğrafa basılı tutup kaydet.'; $('msg').className = 'ok';
+  $('msg').textContent = t('downloaded'); $('msg').className = 'ok';
 };
 
 /* ---------- Galeriden seçme (EXIF tarih + konum) ---------- */
@@ -580,16 +659,24 @@ $('pick').addEventListener('change', async e => {
   img.onload = () => {
     cur = { src: img,
       date: ex.date || new Date(f.lastModified || Date.now()),
-      from: ex.date ? 'fotoğraftan okundu' : 'dosya tarihi',
+      from: ex.date ? 'fromExif' : 'fromFile',
       gps: ex.gps || (gps ? { ...gps } : null),
-      gpsFrom: ex.gps ? 'fotoğraftan okundu' : 'şu anki' };
+      gpsFrom: ex.gps ? 'gpsExif' : 'gpsNow' };
     openReview();
   };
-  img.onerror = () => { camMessage('Bu fotoğraf açılamadı. JPG veya PNG dene.'); };
+  img.onerror = () => { camMessage('photoFail'); };
   img.src = URL.createObjectURL(f);
 });
 
 /* ---------- Başlat ---------- */
+/* ---------- Dil düğmesi ---------- */
+$('langBtn').onclick = () => {
+  LANG = LANG === 'tr' ? 'en' : 'tr';
+  try { localStorage.setItem('damga-lang', LANG); } catch(e) {}
+  applyStatic(); renderProjects(); renderChip(); camMessage(camKey); drawOverlay();
+  if (!$('review').hidden && cur){ renderShot(); }
+};
+
 if (S.gps) startGps();
 startCam();
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
