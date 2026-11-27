@@ -1,5 +1,5 @@
 // Önce ağ, yoksa önbellek: güncellemeler hemen gelir, internetsiz de açılır.
-const CACHE = 'damga-v6';
+const CACHE = 'damga-v7';
 const ASSETS = ['./', './index.html', './manifest.webmanifest',
   './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-512-maskable.png'];
 

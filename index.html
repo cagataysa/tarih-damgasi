@@ -119,6 +119,16 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .logo-box{width:96px;height:56px;border-radius:10px;background:#fff;display:grid;place-items:center;overflow:hidden;font-size:12px;color:#6b7480;flex:none}
 .logo-box img{max-width:88px;max-height:48px;object-fit:contain}
 .btn.small{padding:9px 12px;font-size:14px}
+.btn.block{display:block;text-align:center}
+.row-in{display:flex;gap:8px}
+.group{display:grid;gap:14px;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px}
+.group .field input[type=text]{background:var(--panel)}
+.vres{display:grid;gap:8px;border:1px solid var(--line);border-left-width:4px;border-radius:12px;padding:12px 14px;background:var(--bg)}
+.vres.ok{border-left-color:var(--ok)} .vres.bad{border-left-color:var(--warn)} .vres.info{border-left-color:var(--accent)}
+.vres h3{margin:0;font-size:15px}
+.vres dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0;font-size:13px}
+.vres dt{color:var(--muted)} .vres dd{margin:0;min-width:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.vres .warn{color:var(--warn)}
 .btn.danger{color:var(--err);background:transparent}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -134,7 +144,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
     <div class="top-r">
     <button class="lang" id="langBtn" type="button" aria-label="Dil / Language"><span data-l="tr">TR</span><span data-l="en">EN</span></button>
     <button class="icon" id="settingsBtn" type="button" data-i18n-aria="settings">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
     </div>
   </header>
@@ -199,6 +209,19 @@ input[type=range]{width:100%;accent-color:var(--accent)}
     <label class="switch"><span><b data-i18n="showFull">İşin tam adını yaz</b><br><span class="hint" data-i18n="showFullHint">Kısa adın altına ayrı satır olarak</span></span><input type="checkbox" id="tamAd"></label>
     <label class="field"><span class="lbl" data-i18n="note">Not</span><input type="text" id="not" data-i18n-ph="notePh" maxlength="80" autocomplete="off"></label>
     <label class="switch"><span><b data-i18n="gpsCoord">GPS koordinatı</b><br><span class="hint" data-i18n="gpsHint">Enlem ve boylamı damgaya ekler</span></span><input type="checkbox" id="gps" checked></label>
+    <div class="group">
+      <label class="switch"><span><b data-i18n="personOn">İsim ve ünvanı yaz</b><br><span class="hint" data-i18n="personHint"></span></span><input type="checkbox" id="kisiAcik"></label>
+      <label class="field"><span class="lbl" data-i18n="personName">Ad Soyad</span><input type="text" id="kAd" maxlength="60" autocomplete="name"></label>
+      <label class="field"><span class="lbl" data-i18n="titleTr">Ünvan (Türkçe)</span><input type="text" id="kUnvan" maxlength="60" autocomplete="off" data-i18n-ph="titleTrPh"></label>
+      <label class="field"><span class="lbl" data-i18n="titleEn">Ünvan (İngilizce)</span><input type="text" id="kUnvanEn" maxlength="60" autocomplete="off" data-i18n-ph="titleEnPh"></label>
+      <div class="field"><span class="lbl" data-i18n="personPos">Yeri</span>
+        <div class="seg"><label><input type="radio" name="kisiYer" id="kisiyer-proje" value="proje"><span data-i18n="posProject">Proje kutusu</span></label><label><input type="radio" name="kisiYer" id="kisiyer-tarih" value="tarih"><span data-i18n="posDate">Tarih kutusu</span></label></div>
+      </div>
+    </div>
+    <div class="group">
+      <label class="switch"><span><b data-i18n="verifyOn">Doğrulama kodu</b><br><span class="hint" data-i18n="verifyHint"></span></span><input type="checkbox" id="dogrula" checked></label>
+      <button class="btn" id="openVerify" type="button" data-i18n="verifyOpen">Fotoğraf doğrula</button>
+    </div>
     <div class="two">
       <div class="field"><span class="lbl" data-i18n="style">Stil</span>
         <div class="seg"><label><input type="radio" name="stil" id="stil-serit" value="serit" checked><span data-i18n="styleBand">Şerit</span></label><label><input type="radio" name="stil" id="stil-retro" value="retro"><span data-i18n="styleRetro">Retro</span></label></div>
@@ -215,6 +238,25 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   </div>
 </section>
 
+<section class="sheet" id="verify" hidden data-i18n-aria="verifyTitle">
+  <div class="grab"></div>
+  <div class="form">
+    <div class="sheet-head"><h2 data-i18n="verifyTitle">Fotoğraf doğrulama</h2><button class="btn" id="closeVerify" type="button" data-i18n="done">Tamam</button></div>
+    <p class="hint" data-i18n="verifyIntro"></p>
+    <label class="btn primary block" for="verifyPick" data-i18n="verifyPick">Fotoğraf seç</label>
+    <input class="sr" type="file" id="verifyPick" accept="image/*">
+    <div id="vResult" aria-live="polite"></div>
+    <div class="field"><span class="lbl" data-i18n="idLookup">ID ile kayıt bul</span>
+      <div class="row-in"><input type="text" id="idIn" placeholder="ABCD-2345" maxlength="9" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="btn small" id="idBtn" type="button" data-i18n="find">Bul</button></div>
+    </div>
+    <div class="field"><span class="lbl" data-i18n="records">Kayıtlar</span>
+      <p class="hint" id="recCount"></p>
+      <div class="logo-row"><button class="btn small" id="recExport" type="button" data-i18n="backup">Yedekle</button><label class="btn small" for="recImport" data-i18n="restore">Yedekten yükle</label><input class="sr" type="file" id="recImport" accept="application/json,.json"></div>
+      <p class="hint" data-i18n="recHint"></p>
+    </div>
+  </div>
+</section>
+
 <script>
 (() => {
 const $ = id => document.getElementById(id);
@@ -225,6 +267,18 @@ const toLocal = d => `${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())
 /* ---------- Dil ---------- */
 const I18N = {
   tr: {
+    personOn:'İsim ve ünvanı yaz', personHint:'Fotoğrafı çekenin adı ve ünvanı damgaya eklenir', personName:'Ad Soyad',
+    titleTr:'Ünvan (Türkçe)', titleEn:'Ünvan (İngilizce)', titleTrPh:'ör. Teknik Ofis Mühendisi', titleEnPh:'ör. Technical Office Engineer',
+    personPos:'Yeri', posProject:'Proje kutusu', posDate:'Tarih kutusu',
+    verifyOn:'Doğrulama kodu', verifyHint:'Her fotoğrafa benzersiz bir ID basar, kaydedilen dosyanın parmak izini bu telefonda tutar', verifyOpen:'Fotoğraf doğrula',
+    verifyTitle:'Fotoğraf doğrulama', verifyIntro:'Damgalı bir fotoğrafın orijinal dosyasını seç. Uygulama dosyanın parmak izini kayıtlarla karşılaştırır; tek piksel bile değişmişse eşleşmez.',
+    verifyPick:'Fotoğraf seç', idLookup:'ID ile kayıt bul', find:'Bul', records:'Kayıtlar', recCount:'Bu telefonda {n} fotoğraf kaydı var.',
+    backup:'Yedekle', restore:'Yedekten yükle', recHint:'Kayıtlar yalnızca bu telefonda tutulur. Telefon değişirse ya da Safari verileri silinirse kaybolur, düzenli yedekle.',
+    vOk:'Orijinal dosya, değiştirilmemiş', vBad:'Kayıt bulunamadı',
+    vBadHint:'Dosya değiştirilmiş, sıkıştırılmış (ör. WhatsApp ile gönderilmiş) ya da başka bir telefonda damgalanmış olabilir. Fotoğraftaki ID ile aşağıdan orijinal kaydı arayabilirsin.',
+    vIdFound:'ID kaydı bulundu', vIdNone:'Bu ID ile kayıt yok', vIdHint:'Bu, ID’nin orijinal kaydı. Elindeki dosyanın değiştirilmediğini göstermek için dosyayla doğrulama yap.',
+    vStampDate:'Damgadaki tarih', vDateSrc:'Tarih kaynağı', vSaved:'Kayıt zamanı', vPerson:'Çeken', vHash:'Parmak izi (SHA-256)', vManual:'Dikkat: tarih elle düzenlenmiş.',
+    recFull:'Doğrulama kaydı oluşturulamadı: telefonda yer yok.', recImported:'{n} kayıt eklendi.', recImportFail:'Yedek dosyası okunamadı.', recSaved:'Doğrulama kaydı oluşturuldu.',
     title:'Tarih Damgası', pickProject:'Proje seç', settings:'Ayarlar', openCam:'Kamerayı aç',
     pickGallery:'Galeriden fotoğraf seç', takePhoto:'Fotoğraf çek', flipCam:'Ön/arka kamera', stampedPhoto:'Damgalı fotoğraf',
     dateTime:'Tarih ve saat', cancel:'Vazgeç', save:'Kaydet', settingsTitle:'Damga ayarları', done:'Tamam',
@@ -246,6 +300,18 @@ const I18N = {
     downloaded:'İndirildi. Olmadıysa fotoğrafa basılı tutup kaydet.', N:'K', S:'G', E:'D', W:'B'
   },
   en: {
+    personOn:'Show name and title', personHint:'Adds the photographer’s name and title to the stamp', personName:'Full name',
+    titleTr:'Title (Turkish)', titleEn:'Title (English)', titleTrPh:'e.g. Teknik Ofis Mühendisi', titleEnPh:'e.g. Technical Office Engineer',
+    personPos:'Position', posProject:'Project box', posDate:'Date box',
+    verifyOn:'Verification code', verifyHint:'Stamps a unique ID on each photo and keeps the saved file’s fingerprint on this phone', verifyOpen:'Verify a photo',
+    verifyTitle:'Photo verification', verifyIntro:'Choose the original file of a stamped photo. The app compares its fingerprint with the records; if even one pixel has changed, it will not match.',
+    verifyPick:'Choose photo', idLookup:'Find record by ID', find:'Find', records:'Records', recCount:'{n} photo records on this phone.',
+    backup:'Back up', restore:'Restore backup', recHint:'Records are kept only on this phone. They are lost if you change phones or clear Safari data, so back them up regularly.',
+    vOk:'Original file, unchanged', vBad:'No record found',
+    vBadHint:'The file may have been edited, compressed (for example sent via WhatsApp) or stamped on another phone. Use the ID on the photo below to look up the original record.',
+    vIdFound:'ID record found', vIdNone:'No record with this ID', vIdHint:'This is the original record for the ID. To show that your file is unchanged, verify the file itself.',
+    vStampDate:'Stamped date', vDateSrc:'Date source', vSaved:'Recorded at', vPerson:'Taken by', vHash:'Fingerprint (SHA-256)', vManual:'Note: the date was edited by hand.',
+    recFull:'Could not create the verification record: phone storage is full.', recImported:'{n} records added.', recImportFail:'Could not read the backup file.', recSaved:'Verification record created.',
     title:'Site Stamp', pickProject:'Choose project', settings:'Settings', openCam:'Open camera',
     pickGallery:'Choose from library', takePhoto:'Take photo', flipCam:'Front/back camera', stampedPhoto:'Stamped photo',
     dateTime:'Date and time', cancel:'Discard', save:'Save', settingsTitle:'Stamp settings', done:'Done',
@@ -289,7 +355,7 @@ const DEFAULT_PROJECTS = [
   { id:'w3', kod:'Adana-TERRP-W3', ad:'Pozantı-Akçatekir Kanalizasyon ve İçme Suyu Şebekesi Yapım İşi', adEn:'Pozantı – Akçatekir Sewerage and Water Supply Network Construction Works' },
   { id:'w4', kod:'Adana-TERRP-W4', ad:'Adana Merkez Yağmur Suyu Yapım İşi', adEn:'Adana Central Stormwater Works' }
 ];
-const S = { not:'', gps:true, stil:'serit', konum:'sag', boyut:1, tamAd:false, projects:null, active:null, duzen:'kucuk', logoYer:'sagust' };
+const S = { not:'', gps:true, stil:'serit', konum:'sag', boyut:1, tamAd:false, projects:null, active:null, duzen:'kucuk', logoYer:'sagust', ad:'', unvan:'', unvanEn:'', kisiAcik:false, kisiYer:'proje', dogrula:true };
 try { Object.assign(S, JSON.parse(localStorage.getItem('damga') || '{}')); } catch(e) {}
 if (!Array.isArray(S.projects)){
   S.projects = DEFAULT_PROJECTS.map(p => ({ ...p }));
@@ -308,6 +374,12 @@ $('not').value = S.not; $('gps').checked = S.gps; $('boyut').value = S.boyut; $(
 $('stil-' + S.stil).checked = true; $('konum-' + S.konum).checked = true;
 if (S.logoYer !== 'solust') S.logoYer = 'sagust'; $('logoyer-' + S.logoYer).checked = true;
 $('not').addEventListener('input', () => { S.not = $('not').value; save(); drawOverlay(); });
+$('kAd').value = S.ad; $('kUnvan').value = S.unvan; $('kUnvanEn').value = S.unvanEn;
+$('kisiAcik').checked = S.kisiAcik; $('dogrula').checked = S.dogrula;
+if (S.kisiYer !== 'tarih') S.kisiYer = 'proje'; $('kisiyer-' + S.kisiYer).checked = true;
+[['kAd','ad'],['kUnvan','unvan'],['kUnvanEn','unvanEn']].forEach(([id, k]) => $(id).addEventListener('input', () => { S[k] = $(id).value; save(); drawOverlay(); }));
+['kisiAcik','dogrula'].forEach(k => $(k).addEventListener('change', () => { S[k] = $(k).checked; save(); drawOverlay(); }));
+const personText = () => { const u = ((LANG === 'en' ? (S.unvanEn || S.unvan) : (S.unvan || S.unvanEn)) || '').trim(); return [(S.ad || '').trim(), u].filter(Boolean).join(' · '); };
 $('tamAd').addEventListener('change', () => { S.tamAd = $('tamAd').checked; save(); drawOverlay(); });
 
 /* ---------- Projeler ---------- */
@@ -378,7 +450,7 @@ $('pDel').onclick = () => {
 $('projPill').onclick = () => openSheet(true);
 renderProjects();
 $('boyut').addEventListener('input', () => { S.boyut = parseFloat($('boyut').value); save(); drawOverlay(); });
-document.querySelectorAll('[name=stil],[name=konum],[name=logoYer]').forEach(r => r.addEventListener('change', () => {
+document.querySelectorAll('[name=stil],[name=konum],[name=logoYer],[name=kisiYer]').forEach(r => r.addEventListener('change', () => {
   S[r.name] = r.value; save(); drawOverlay(); }));
 $('gps').addEventListener('change', () => { S.gps = $('gps').checked; save(); S.gps ? startGps() : stopGps(); drawOverlay(); });
 
@@ -396,7 +468,7 @@ function wrapText(x, text, maxW){
   if (cur) out.push(cur); return out;
 }
 // İki blok: tarih bloğu seçilen köşede, proje bloğu karşı köşede (daha büyük yazı)
-function stampBlocks(date, gps){
+function stampBlocks(date, gps, id){
   const p = active(), info = [{ t: fmtDate(date), f: 30, b: 700 }], proj = [];
   if (S.not.trim()) info.push({ t: S.not.trim(), f: 20, b: 500 });
   if (S.gps && gps) info.push({ t: fmtGps(gps), f: 20, b: 500 });
@@ -405,10 +477,13 @@ function stampBlocks(date, gps){
     const full = ((LANG === 'en' ? (p.adEn || p.ad) : (p.ad || p.adEn)) || '').trim();
     if (S.tamAd && full) proj.push({ t: full, f: 25, b: 600, wrap: true });
   }
+  const who = S.kisiAcik ? personText() : '';
+  if (who){ if (S.kisiYer === 'proje' && proj.length) proj.push({ t: who, f: 21, b: 500 }); else info.splice(1, 0, { t: who, f: 20, b: 500 }); }
+  if (S.dogrula && id) info.push({ t: 'ID ' + id, f: 16, b: 500 });
   return { info, proj, p };
 }
-function drawStamp(x, ox, oy, W, H, date, gps){
-  const { info, proj, p } = stampBlocks(date, gps);
+function drawStamp(x, ox, oy, W, H, date, gps, id){
+  const { info, proj, p } = stampBlocks(date, gps, id);
   const retro = S.stil === 'retro', dz = S.duzen || 'iki';
   const s = Math.max(W, H) / 1000 * S.boyut, m = 22*s, LH = 1.3, full = W - 2*m, pp = 7*s;
   if (dz === 'kucuk') proj.forEach(l => { l.f = l.b === 700 ? 26 : 19; });
@@ -538,7 +613,7 @@ function drawOverlay(){
   }
   x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, r.width, r.height);
   if (!c || !stream) return;
-  drawStamp(x, c.x, c.y, c.w, c.h, new Date(), gps);
+  drawStamp(x, c.x, c.y, c.w, c.h, new Date(), gps, '••••-••••');
 }
 setInterval(drawOverlay, 1000);
 addEventListener('resize', drawOverlay);
@@ -573,11 +648,17 @@ function renderShot(){
   const W = cur.src.naturalWidth || cur.src.width, H = cur.src.naturalHeight || cur.src.height;
   const c = document.createElement('canvas'); c.width = W; c.height = H;
   const x = c.getContext('2d'); x.drawImage(cur.src, 0, 0, W, H);
-  drawStamp(x, 0, 0, W, H, cur.date, cur.gps);
+  drawStamp(x, 0, 0, W, H, cur.date, cur.gps, cur.id);
   const d = cur.date;
   cur.name = `damga_${d.getFullYear()}${p2(d.getMonth()+1)}${p2(d.getDate())}_${p2(d.getHours())}${p2(d.getMinutes())}${p2(d.getSeconds())}.jpg`;
   cur.blob = null;
-  c.toBlob(b => { cur.blob = b; if (cur.url) URL.revokeObjectURL(cur.url); cur.url = URL.createObjectURL(b); $('shot').src = cur.url; }, 'image/jpeg', 0.92);
+  const mine = cur, rv = cur.rv = (cur.rv || 0) + 1; cur.hash = null;
+  c.toBlob(b => {
+    if (cur !== mine || mine.rv !== rv || !b) return;
+    if (cur.url) URL.revokeObjectURL(cur.url); cur.url = URL.createObjectURL(b); $('shot').src = cur.url;
+    sha256(b).then(h => { if (cur === mine && mine.rv === rv){ cur.hash = h; cur.blob = b; } })
+             .catch(() => { if (cur === mine && mine.rv === rv) cur.blob = b; });
+  }, 'image/jpeg', 0.92);
   renderMeta();
 }
 function renderMeta(){
@@ -588,6 +669,7 @@ function renderMeta(){
   $('meta').innerHTML = meta.join('');
 }
 function openReview(){
+  if (!cur.id) cur.id = makeId();
   $('shotDate').value = toLocal(cur.date); $('msg').textContent = ''; $('msg').className = '';
   renderShot(); $('review').hidden = false;
   if (stream) stream.getTracks().forEach(t => t.stop()); stream = null;
@@ -608,13 +690,15 @@ $('again').onclick = () => { $('review').hidden = true; cur = null; startCam(); 
 
 $('save').onclick = async () => {
   if (!cur?.blob){ $('msg').textContent = t('preparing'); return; }
+  let note = '';
+  if (S.dogrula) note = addRecord(cur) ? ' ' + t('recSaved') : ' ' + t('recFull');
   const file = new File([cur.blob], cur.name, { type: 'image/jpeg' });
   if (navigator.canShare && navigator.canShare({ files: [file] })){
-    try { await navigator.share({ files: [file] }); $('msg').textContent = t('savedShare'); $('msg').className = 'ok'; return; }
+    try { await navigator.share({ files: [file] }); $('msg').textContent = t('savedShare') + note; $('msg').className = 'ok'; return; }
     catch(e){ if (e.name === 'AbortError'){ $('msg').textContent = t('cancelled'); $('msg').className = ''; return; } }
   }
   const a = document.createElement('a'); a.href = cur.url; a.download = cur.name; document.body.appendChild(a); a.click(); a.remove();
-  $('msg').textContent = t('downloaded'); $('msg').className = 'ok';
+  $('msg').textContent = t('downloaded') + note; $('msg').className = 'ok';
 };
 
 /* ---------- Galeriden seçme (EXIF tarih + konum) ---------- */
@@ -669,11 +753,72 @@ $('pick').addEventListener('change', async e => {
 });
 
 /* ---------- Başlat ---------- */
+/* ---------- Değişiklik kontrolü ---------- */
+const ALPH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function makeId(){ const a = new Uint8Array(8); crypto.getRandomValues(a); const s = Array.from(a, v => ALPH[v % 32]).join(''); return s.slice(0, 4) + '-' + s.slice(4); }
+const toHex = buf => Array.from(new Uint8Array(buf), b => b.toString(16).padStart(2, '0')).join('');
+const sha256 = async blob => toHex(await crypto.subtle.digest('SHA-256', await blob.arrayBuffer()));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+function loadRecs(){ try { const r = JSON.parse(localStorage.getItem('damga-kayit') || '[]'); return Array.isArray(r) ? r : []; } catch(e){ return []; } }
+function saveRecs(r){ try { localStorage.setItem('damga-kayit', JSON.stringify(r)); return true; } catch(e){ return false; } }
+function addRecord(c){
+  if (!c.hash) return false;
+  const r = loadRecs(); if (r.some(x => x.h === c.hash)) return true;
+  const p = active();
+  r.push({ id: c.id, h: c.hash, n: c.name, d: c.date.toISOString(), src: c.from, p: p ? p.kod : '',
+           u: S.kisiAcik ? personText() : '', g: c.gps ? { lat: c.gps.lat, lon: c.gps.lon, acc: c.gps.acc } : null, at: new Date().toISOString() });
+  return saveRecs(r);
+}
+function recHtml(rec){
+  const rows = [['ID', rec.id], [t('vStampDate'), fmtDate(new Date(rec.d))], [t('vDateSrc'), t(rec.src)], [t('vSaved'), fmtDate(new Date(rec.at))]];
+  if (rec.p) rows.push([t('project'), rec.p]);
+  if (rec.u) rows.push([t('vPerson'), rec.u]);
+  if (rec.g) rows.push([t('mLoc'), fmtGps(rec.g)]);
+  rows.push([t('vHash'), rec.h.slice(0, 16) + '…']);
+  return (rec.src === 'fromManual' ? `<p class="hint warn">${esc(t('vManual'))}</p>` : '') +
+    '<dl>' + rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('') + '</dl>';
+}
+function showResult(cls, title, body){ $('vResult').innerHTML = `<div class="vres ${cls}"><h3>${esc(title)}</h3>${body || ''}</div>`; }
+function renderRecCount(){ $('recCount').textContent = t('recCount').replace('{n}', loadRecs().length); }
+function openVerify(o){ $('verify').hidden = !o; $('sheetBg').hidden = !o; if (o){ $('vResult').innerHTML = ''; renderRecCount(); } }
+$('openVerify').onclick = () => { openSheet(false); openVerify(true); };
+$('closeVerify').onclick = () => openVerify(false);
+$('sheetBg').addEventListener('click', () => openVerify(false));
+$('verifyPick').addEventListener('change', async e => {
+  const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return;
+  try {
+    const h = await sha256(f), rec = loadRecs().find(x => x.h === h);
+    rec ? showResult('ok', t('vOk'), recHtml(rec)) : showResult('bad', t('vBad'), `<p class="hint">${esc(t('vBadHint'))}</p>`);
+  } catch(err){ showResult('bad', t('photoFail')); }
+});
+$('idBtn').onclick = () => {
+  const q = $('idIn').value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const rec = q && loadRecs().find(x => (x.id || '').replace('-', '') === q);
+  rec ? showResult('info', t('vIdFound'), recHtml(rec) + `<p class="hint">${esc(t('vIdHint'))}</p>`) : showResult('bad', t('vIdNone'));
+};
+$('recExport').onclick = async () => {
+  const d = new Date(), name = `damga-kayitlari_${d.getFullYear()}${p2(d.getMonth()+1)}${p2(d.getDate())}.json`;
+  const blob = new Blob([JSON.stringify(loadRecs(), null, 1)], { type: 'application/json' });
+  const file = new File([blob], name, { type: 'application/json' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })){ try { await navigator.share({ files: [file] }); } catch(e) {} return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+};
+$('recImport').addEventListener('change', async e => {
+  const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return;
+  try {
+    const inc = JSON.parse(await f.text()); if (!Array.isArray(inc)) throw 0;
+    const r = loadRecs(), have = new Set(r.map(x => x.h)); let n = 0;
+    inc.forEach(x => { if (x && typeof x.h === 'string' && typeof x.id === 'string' && !have.has(x.h)){ r.push(x); have.add(x.h); n++; } });
+    if (!saveRecs(r)) throw 0;
+    renderRecCount(); showResult('info', t('recImported').replace('{n}', n));
+  } catch(err){ showResult('bad', t('recImportFail')); }
+});
+
 /* ---------- Dil düğmesi ---------- */
 $('langBtn').onclick = () => {
   LANG = LANG === 'tr' ? 'en' : 'tr';
   try { localStorage.setItem('damga-lang', LANG); } catch(e) {}
-  applyStatic(); renderProjects(); renderChip(); camMessage(camKey); drawOverlay();
+  applyStatic(); renderProjects(); renderChip(); camMessage(camKey); drawOverlay(); if (!$('verify').hidden){ renderRecCount(); $('vResult').innerHTML = ''; }
   if (!$('review').hidden && cur){ renderShot(); }
 };
 
