@@ -2,7 +2,7 @@
 
 Şantiye fotoğraflarına tarih, saat, proje, not ve GPS koordinatı basan web uygulaması. Kurulum gerektirmez, iPhone ve Android'de tarayıcıdan açılır.
 
-**▶ Uygulamayı aç:** https://KULLANICIADIN.github.io/tarih-damgasi/
+**▶ Uygulamayı aç:** https://cagataysa.github.io/tarih-damgasi/
 
 ## Özellikler
 
@@ -34,7 +34,7 @@ Fotoğraflar, projeler, logolar ve doğrulama kayıtları yalnızca kendi telefo
 
 A web app that stamps date, time, project, note and GPS coordinates onto site photos. No install needed: it opens in the browser on iPhone and Android.
 
-**▶ Open the app:** https://KULLANICIADIN.github.io/tarih-damgasi/
+**▶ Open the app:** https://cagataysa.github.io/tarih-damgasi/
 
 **Features:** live viewfinder with stamp preview · GPS with accuracy · saved projects with Turkish and English names · per-project logo · photographer name and title · tamper check with a unique ID and SHA-256 fingerprint · reads capture date and location from library photos · Turkish / English · works offline.
 
