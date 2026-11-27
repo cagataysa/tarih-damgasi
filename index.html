@@ -31,16 +31,16 @@ button{cursor:pointer}
 [hidden]{display:none!important}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
-#app{height:100dvh;display:grid;grid-template-rows:auto 1fr auto}
+#app{height:100dvh;display:grid;grid-template-rows:auto 1fr auto;grid-template-columns:minmax(0,1fr)}
 .top{display:flex;align-items:center;justify-content:space-between;gap:10px;
   padding:calc(env(safe-area-inset-top,0px) + 10px) max(14px,env(safe-area-inset-right,0px)) 10px max(14px,env(safe-area-inset-left,0px))}
-.top-l{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0}
-.proj-pill{display:flex;align-items:center;gap:6px;background:none;border:0;padding:2px 0;font:700 17px var(--sans);max-width:72vw;min-width:0}
+.top-l{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0;flex:1}
+.proj-pill{display:flex;align-items:center;gap:6px;background:none;border:0;padding:2px 0;font:700 17px var(--sans);max-width:100%;min-width:0}
 .proj-pill span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .proj-pill svg{width:16px;height:16px;flex:none;color:var(--muted)}
 .proj-pill.empty{color:var(--accent)}
 .chip{display:inline-flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:999px;
-  padding:5px 11px;font:500 12px var(--mono);font-variant-numeric:tabular-nums;color:var(--muted);min-width:0;max-width:72vw}
+  padding:5px 11px;font:500 12px var(--mono);font-variant-numeric:tabular-nums;color:var(--muted);min-width:0;max-width:100%;overflow:hidden}
 .chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
 .chip[data-s="ok"] .dot{background:var(--ok)} .chip[data-s="wait"] .dot{background:var(--warn);animation:blink 1s infinite}
@@ -470,15 +470,18 @@ function wrapText(x, text, maxW){
 // İki blok: tarih bloğu seçilen köşede, proje bloğu karşı köşede (daha büyük yazı)
 function stampBlocks(date, gps, id){
   const p = active(), info = [{ t: fmtDate(date), f: 30, b: 700 }], proj = [];
-  if (S.not.trim()) info.push({ t: S.not.trim(), f: 20, b: 500 });
+  if (S.not.trim()) info.push({ t: S.not.trim(), f: 20, b: 500, wrap: true });
   if (S.gps && gps) info.push({ t: fmtGps(gps), f: 20, b: 500 });
   if (p){
     if (p.kod.trim()) proj.push({ t: p.kod.trim(), f: 34, b: 700 });
     const full = ((LANG === 'en' ? (p.adEn || p.ad) : (p.ad || p.adEn)) || '').trim();
     if (S.tamAd && full) proj.push({ t: full, f: 25, b: 600, wrap: true });
   }
-  const who = S.kisiAcik ? personText() : '';
-  if (who){ if (S.kisiYer === 'proje' && proj.length) proj.push({ t: who, f: 21, b: 500 }); else info.splice(1, 0, { t: who, f: 20, b: 500 }); }
+  if (S.kisiAcik){
+    const u = ((LANG === 'en' ? (S.unvanEn || S.unvan) : (S.unvan || S.unvanEn)) || '').trim(), n = (S.ad || '').trim();
+    const pl = [n && { t: n, f: 21, b: 600, wrap: true }, u && { t: u, f: 19, b: 500, wrap: true }].filter(Boolean);
+    if (S.kisiYer === 'proje' && proj.length) proj.push(...pl); else info.splice(1, 0, ...pl);
+  }
   if (S.dogrula && id) info.push({ t: 'ID ' + id, f: 16, b: 500 });
   return { info, proj, p };
 }
@@ -544,7 +547,11 @@ function drawStamp(x, ox, oy, W, H, date, gps, id){
 
   // Tarih bloğu: seçilen köşe
   const dSide = S.konum === 'sag' ? 'sag' : 'sol', pRight = dSide !== 'sag';
-  const dpad = retro ? 0 : 14*s, D = layout(info, full, dpad);
+  const pBoxed = !retro && dz !== 'sade', ppad = pBoxed ? 14*s : 0, half = (W - 3*m) / 2;
+  const two = proj.length && dz !== 'yan';
+  const dpad = retro ? 0 : 14*s, D = layout(info, two ? half : full, dpad);
+  const P = two ? layout(proj, half, ppad) : null;
+  if (two && !retro){ const bw = Math.max(D.w, P.w); D.w = bw; if (pBoxed) P.w = bw; }   // iki kutu aynı genişlikte
   const dx = dSide === 'sag' ? ox+W-m-D.w : ox+m, dy = oy+H-m-D.h;
   if (!retro) box(dx, dy, D.w, D.h);
   drawText(D, dx, dy, retro && dSide === 'sag', retro);
@@ -553,7 +560,6 @@ function drawStamp(x, ox, oy, W, H, date, gps, id){
   // Proje bloğu: karşı köşe
   let avail = W - 3*m - D.w, bottom = oy+H-m;
   if (avail < 0.3*W){ avail = full; bottom = dy - 10*s; }
-  const pBoxed = !retro && dz !== 'sade', ppad = pBoxed ? 14*s : 0;
 
   if (dz === 'yan' && logo && proj.length){          // logo yazının yanında, aynı kutuda
     const lg = logoSize(60*s, 200*s);
@@ -567,7 +573,7 @@ function drawStamp(x, ox, oy, W, H, date, gps, id){
   }
   let anchor = { x: dx, y: dy, w: D.w, right: dSide === 'sag' };
   if (proj.length){
-    const L = layout(proj, avail, ppad);
+    const L = P || layout(proj, avail, ppad);
     const bx = pRight ? ox+W-m-L.w : ox+m, by = bottom - L.h;
     if (pBoxed) box(bx, by, L.w, L.h);
     drawText(L, bx, by, !pBoxed && pRight, !pBoxed);
