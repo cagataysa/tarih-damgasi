@@ -214,9 +214,6 @@ input[type=range]{width:100%;accent-color:var(--accent)}
       <label class="field"><span class="lbl" data-i18n="personName">Ad Soyad</span><input type="text" id="kAd" maxlength="60" autocomplete="name"></label>
       <label class="field"><span class="lbl" data-i18n="titleTr">Ünvan (Türkçe)</span><input type="text" id="kUnvan" maxlength="60" autocomplete="off" data-i18n-ph="titleTrPh"></label>
       <label class="field"><span class="lbl" data-i18n="titleEn">Ünvan (İngilizce)</span><input type="text" id="kUnvanEn" maxlength="60" autocomplete="off" data-i18n-ph="titleEnPh"></label>
-      <div class="field"><span class="lbl" data-i18n="personPos">Yeri</span>
-        <div class="seg"><label><input type="radio" name="kisiYer" id="kisiyer-proje" value="proje"><span data-i18n="posProject">Proje kutusu</span></label><label><input type="radio" name="kisiYer" id="kisiyer-tarih" value="tarih"><span data-i18n="posDate">Tarih kutusu</span></label></div>
-      </div>
     </div>
     <div class="group">
       <label class="switch"><span><b data-i18n="verifyOn">Doğrulama kodu</b><br><span class="hint" data-i18n="verifyHint"></span></span><input type="checkbox" id="dogrula" checked></label>
@@ -267,7 +264,7 @@ const toLocal = d => `${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())
 /* ---------- Dil ---------- */
 const I18N = {
   tr: {
-    personOn:'İsim ve ünvanı yaz', personHint:'Fotoğrafı çekenin adı ve ünvanı damgaya eklenir', personName:'Ad Soyad',
+    personOn:'İsim ve ünvanı yaz', personHint:'Fotoğrafı çekenin adı ve ünvanı proje bilgisinin altına eklenir', personName:'Ad Soyad',
     titleTr:'Ünvan (Türkçe)', titleEn:'Ünvan (İngilizce)', titleTrPh:'ör. Teknik Ofis Mühendisi', titleEnPh:'ör. Technical Office Engineer',
     personPos:'Yeri', posProject:'Proje kutusu', posDate:'Tarih kutusu',
     verifyOn:'Doğrulama kodu', verifyHint:'Her fotoğrafa benzersiz bir ID basar, kaydedilen dosyanın parmak izini bu telefonda tutar', verifyOpen:'Fotoğraf doğrula',
@@ -300,7 +297,7 @@ const I18N = {
     downloaded:'İndirildi. Olmadıysa fotoğrafa basılı tutup kaydet.', N:'K', S:'G', E:'D', W:'B'
   },
   en: {
-    personOn:'Show name and title', personHint:'Adds the photographer’s name and title to the stamp', personName:'Full name',
+    personOn:'Show name and title', personHint:'Adds the photographer’s name and title under the project details', personName:'Full name',
     titleTr:'Title (Turkish)', titleEn:'Title (English)', titleTrPh:'e.g. Teknik Ofis Mühendisi', titleEnPh:'e.g. Technical Office Engineer',
     personPos:'Position', posProject:'Project box', posDate:'Date box',
     verifyOn:'Verification code', verifyHint:'Stamps a unique ID on each photo and keeps the saved file’s fingerprint on this phone', verifyOpen:'Verify a photo',
@@ -376,7 +373,6 @@ if (S.logoYer !== 'solust') S.logoYer = 'sagust'; $('logoyer-' + S.logoYer).chec
 $('not').addEventListener('input', () => { S.not = $('not').value; save(); drawOverlay(); });
 $('kAd').value = S.ad; $('kUnvan').value = S.unvan; $('kUnvanEn').value = S.unvanEn;
 $('kisiAcik').checked = S.kisiAcik; $('dogrula').checked = S.dogrula;
-if (S.kisiYer !== 'tarih') S.kisiYer = 'proje'; $('kisiyer-' + S.kisiYer).checked = true;
 [['kAd','ad'],['kUnvan','unvan'],['kUnvanEn','unvanEn']].forEach(([id, k]) => $(id).addEventListener('input', () => { S[k] = $(id).value; save(); drawOverlay(); }));
 ['kisiAcik','dogrula'].forEach(k => $(k).addEventListener('change', () => { S[k] = $(k).checked; save(); drawOverlay(); }));
 const personText = () => { const u = ((LANG === 'en' ? (S.unvanEn || S.unvan) : (S.unvan || S.unvanEn)) || '').trim(); return [(S.ad || '').trim(), u].filter(Boolean).join(' · '); };
@@ -450,7 +446,7 @@ $('pDel').onclick = () => {
 $('projPill').onclick = () => openSheet(true);
 renderProjects();
 $('boyut').addEventListener('input', () => { S.boyut = parseFloat($('boyut').value); save(); drawOverlay(); });
-document.querySelectorAll('[name=stil],[name=konum],[name=logoYer],[name=kisiYer]').forEach(r => r.addEventListener('change', () => {
+document.querySelectorAll('[name=stil],[name=konum],[name=logoYer]').forEach(r => r.addEventListener('change', () => {
   S[r.name] = r.value; save(); drawOverlay(); }));
 $('gps').addEventListener('change', () => { S.gps = $('gps').checked; save(); S.gps ? startGps() : stopGps(); drawOverlay(); });
 
@@ -480,7 +476,7 @@ function stampBlocks(date, gps, id){
   if (S.kisiAcik){
     const u = ((LANG === 'en' ? (S.unvanEn || S.unvan) : (S.unvan || S.unvanEn)) || '').trim(), n = (S.ad || '').trim();
     const pl = [n && { t: n, f: 21, b: 600, wrap: true }, u && { t: u, f: 19, b: 500, wrap: true }].filter(Boolean);
-    if (S.kisiYer === 'proje' && proj.length) proj.push(...pl); else info.splice(1, 0, ...pl);
+    if (proj.length) proj.push(...pl); else info.splice(1, 0, ...pl);
   }
   if (S.dogrula && id) info.push({ t: 'ID ' + id, f: 16, b: 500 });
   return { info, proj, p };
